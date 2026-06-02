@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: mariadb:10.11
+    container_name: mediawiki_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mediawiki_root_secure_pass_2026
+      MYSQL_DATABASE: my_wiki
+      MYSQL_USER: wikiuser
+      MYSQL_PASSWORD: wiki_db_secure_pass_2026
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - mw_network
+
+  mediawiki:
+    depends_on:
+      - db
+    image: mediawiki:1.41
+    container_name: mediawiki_app
+    restart: always
+    ports:
+      - "8081:80"
+    volumes:
+      - mediawiki_data:/var/www/html/images
+    networks:
+      - mw_network
+
+volumes:
+  db_data:
+    name: mediawiki_db_data
+  mediawiki_data:
+    name: mediawiki_app_data
+
+networks:
+  mw_network:
+    name: mediawiki_network
